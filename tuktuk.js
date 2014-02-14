@@ -1,3 +1,4 @@
+
 /*
 TukTuk - Simple (but powerful) RWD Framework
 http://tuktuk.tapquo.com
@@ -5,8 +6,7 @@ Copyright (c) 2011-2013 Tapquo S.L. - Licensed GPLv3, Commercial
 
 @namespace  Tuktuk
 @author     Javier Jimenez Villar <javi@tapquo.com> || @soyjavi
-*/
-
+ */
 
 (function() {
   var TukTuk,
@@ -92,10 +92,10 @@ Copyright (c) 2011-2013 Tapquo S.L. - Licensed GPLv3, Commercial
 
 (function() {
   window.TukTuk.Button = (function(tk) {
+
     /*
         @todo: Describe method
-    */
-
+     */
     var loading;
     loading = function(selector, value) {
       var button;
@@ -166,23 +166,28 @@ Copyright (c) 2011-2013 Tapquo S.L. - Licensed GPLv3, Commercial
 
 (function() {
   window.TukTuk.Modal = (function(tk) {
-    var alert, confirm, hide, loading, lock, modal, prompt, show;
+    var alert, confirm, disposable, hide, loading, lock, modal, prompt, show;
     lock = void 0;
     modal = void 0;
+    disposable = true;
+
     /*
         @todo: Describe method
-    */
-
-    show = function(modal_id) {
+     */
+    show = function(modal_id, allow_dismiss) {
+      if (allow_dismiss == null) {
+        allow_dismiss = true;
+      }
+      disposable = allow_dismiss;
       lock.addClass("active").show();
       this._hideAnyModal();
       modal = tk.dom("[data-tuktuk=modal]#" + modal_id).addClass("active");
       return this;
     };
+
     /*
         @todo: Describe method
-    */
-
+     */
     hide = function() {
       lock.removeClass("active");
       if (modal != null) {
@@ -198,6 +203,7 @@ Copyright (c) 2011-2013 Tapquo S.L. - Licensed GPLv3, Commercial
       if (message == null) {
         message = "";
       }
+      disposable = true;
       modal = tk.dom("[data-tuktuk=modal][data-modal=alert]");
       text = modal.find("#text");
       text.html(message);
@@ -214,6 +220,7 @@ Copyright (c) 2011-2013 Tapquo S.L. - Licensed GPLv3, Commercial
       if (message == null) {
         message = "";
       }
+      disposable = false;
       modal = tk.dom("[data-tuktuk=modal][data-modal=confirm]");
       text = modal.find("#text");
       accept_button = modal.find("button.success");
@@ -243,6 +250,7 @@ Copyright (c) 2011-2013 Tapquo S.L. - Licensed GPLv3, Commercial
       if (message == null) {
         message = "";
       }
+      disposable = false;
       modal = tk.dom("[data-tuktuk=modal][data-modal=prompt]");
       text = modal.find("#text");
       content = modal.find("#content");
@@ -269,10 +277,10 @@ Copyright (c) 2011-2013 Tapquo S.L. - Licensed GPLv3, Commercial
       modal.addClass("active");
       return this;
     };
+
     /*
         @loading: Describe method
-    */
-
+     */
     loading = function(text) {
       this._hideAnyModal();
       lock.attr("data-loading", "true").addClass("active").show();
@@ -301,7 +309,7 @@ Copyright (c) 2011-2013 Tapquo S.L. - Licensed GPLv3, Commercial
         tk.dom(document.body).append("" + alert_template + "\n" + prompt_template + "\n" + confirm_template + "\n" + loading_template);
         tk.dom("[data-tuktuk=lock]").on("click", function(event) {
           loading = lock.attr("data-loading");
-          if (!(event.target === modal || loading === "true")) {
+          if (!(event.target === modal || loading === "true" || !disposable)) {
             return TukTuk.Modal.hide();
           }
         });
